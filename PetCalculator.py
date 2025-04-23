@@ -126,21 +126,21 @@ elif pet_type == "aura":
     exist = st.number_input("Enter # of exist", min_value=1)
     rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
     island_chance = st.number_input("Enter island chance", min_value=0.0001, format="%.4f")
-    demand = st.slider("Enter demand (1-20)", min_value=1, max_value=20)
+    demand = st.slider("Enter demand", min_value=1, max_value=20)
     if st.button("Calculate Value"):
         value = calculate_value(pet_type, variant, exist=exist, rarity=rarity, demand=demand, island_chance=island_chance)
 
 elif pet_type == "pass":
     rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
     demand = st.slider("Enter demand (1-20)", min_value=1, max_value=20)
-    c = st.number_input("Enter c value", min_value=0.01, format="%.3f")
+    c = st.number_input("Enter c value (0.1 - 1)", min_value=0.01, format="%.3f")
     if st.button("Calculate Value"):
         value = calculate_value(pet_type, variant, rarity=Decimal(rarity), demand=demand, c=Decimal(c), variant_multi=variant_multi)
 
 elif pet_type == "shop":
     price = st.number_input("Enter price", min_value=1)
     demand = st.slider("Enter demand (1-20)", min_value=1, max_value=20)
-    c = st.number_input("Enter c value", min_value=0.01, format="%.3f")
+    c = st.number_input("Enter c value (0.1 - 1)", min_value=0.01, format="%.3f")
     if st.button("Calculate Value"):
         value = calculate_value(pet_type, variant, price=price, demand=demand, c=Decimal(c), variant_multi=variant_multi)
 
