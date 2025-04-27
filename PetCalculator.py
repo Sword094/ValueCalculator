@@ -89,7 +89,7 @@ def calculate_value(
         i2 = smp.integrate(
             smp.sqrt((rarity * multiplier) / exist), (x_sym, 0, exist)
         )
-        multiplier_factor = 0.1 if type_input == "permanent" else 0.25
+        multiplier_factor = 0.1 if type_input == "permanent" else 0.5
         diff = (i1 - i2) * (1 + multiplier_factor * smp.exp(0.25 * demand))
 
     elif type_input == "aura":
