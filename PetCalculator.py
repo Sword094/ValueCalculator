@@ -89,7 +89,7 @@ def calculate_value(
         i2 = smp.integrate(
             smp.sqrt((rarity * multiplier) / exist), (x_sym, 0, exist)
         )
-        multiplier_factor = 0.1 if type_input == "permanent" else 0.2
+        multiplier_factor = 0.1 if type_input == "permanent" else 0.25
         diff = (i1 - i2) * (1 + multiplier_factor * smp.exp(0.25 * demand))
 
     elif type_input == "aura":
@@ -156,7 +156,7 @@ if pet_type in ["permanent", "limited"]:
             pet_type, variant, exist=exist, rarity=rarity, demand=demand
         )
 
-# ────────────────────────────────  AURA  ────────────────────────────────
+# ────────────────────────────────  AURA  ───────────────   ─────────────────
 elif pet_type == "aura":
     exist = st.number_input("Enter # of exist", min_value=1, step=1)
     rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
