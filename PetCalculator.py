@@ -114,7 +114,7 @@ def calculate_value(
         if variant_input == "normal":
             diff = smp.sqrt(diff) / 2
         else:
-            diff = diff / (1 / (variant_multi / 10))
+            diff = diff / (1 / (variant_multi / 5))
             diff = 0.5 * smp.sqrt(diff)
 
     elif type_input == "shop":
