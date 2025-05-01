@@ -141,6 +141,10 @@ def calculate_value(
         else:
             diff = diff / (1 / (variant_multi / 3))
             diff = smp.sqrt(diff) * 0.75
+        print("i1 =", i1.evalf())
+        print("i2 =", i2.evalf())
+        print("diff =", diff.evalf())
+
             
     elif type_input == "Shop":
         i1 = smp.integrate(
