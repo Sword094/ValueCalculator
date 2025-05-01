@@ -244,7 +244,7 @@ elif pet_type == "Pass":
         )
 
 elif pet_type == "Pass Limited":
-    rarity = st.number_input("Enter rarity", min_value == 0.0001, format="%.4f")
+    rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
     demand = st.slider("Enter demand (1-10)", 1, 10)
     c = st.number_input("Enter c value (0.01+)", min_value=0.01, format="%.3f")
 
