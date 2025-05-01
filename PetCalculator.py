@@ -137,10 +137,10 @@ def calculate_value(
         )
         diff = (i1 - i2) ** 3
         if variant_input == "normal":
-            diff = 0.75 * smp.sqrt(diff)
+            diff = smp.sqrt(diff) * 0.75
         else:
             diff = diff / (1 / (variant_multi / 3))
-            diff = 0.75 * smp.sqrt(diff)
+            diff = smp.sqrt(diff) * 0.75
             
     elif type_input == "Shop":
         i1 = smp.integrate(
