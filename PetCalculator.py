@@ -189,7 +189,7 @@ elif pet_type == "Rfit":
             island_chance=island_chance,
         )
 
-elif pet_type == "Rift Limited ":
+elif pet_type == "Rift Limited":
     exist = st.number_input("Enter # of exist", min_value=1, step=1)
     rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
     island_chance = st.number_input("Enter island chance", min_value=0.0001, format="%.4f")
