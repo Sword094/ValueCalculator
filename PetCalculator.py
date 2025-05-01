@@ -133,7 +133,7 @@ def calculate_value(
             (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand + 1)
         )
         i2 = smp.integrate(
-            (((1 - smp.exp(-x * x_sym)) / c) / rarity, (x_sym, 0, demand)
+            (((1 - smp.exp(-x * x_sym)) / c) / rarity), (x_sym, 0, demand)
         )
         diff = (i1 - i2) ** 3
         if variant_input == "normal":
