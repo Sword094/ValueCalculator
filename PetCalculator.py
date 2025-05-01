@@ -82,7 +82,7 @@ def calculate_value(
     x_sym = smp.Symbol("x")
     multiplier = variant_multipliers.get(variant_input, 1)
 
-    if type_input in ["permanent", "limited"]:
+    if type_input in ["Permanent", "Limited"]:
         i1 = smp.integrate(
             smp.sqrt((rarity * multiplier) / (exist + 2)), (x_sym, 0, exist + 2)
         )
@@ -92,7 +92,7 @@ def calculate_value(
         multiplier_factor = 0.1 if type_input == "permanent" else 0.25
         diff = (i1 - i2) * (1 + multiplier_factor * smp.exp(0.25 * demand))
 
-    elif type_input == "aura":
+    elif type_input == "Rift":
         safe_lower = 1e-6  # prevent divide by zero
         const_expr = (rarity * multiplier) * (island_chance / 100)
         i1 = smp.integrate(
@@ -103,7 +103,18 @@ def calculate_value(
         )
         diff = (i1 - i2) * (1 + 0.1 * smp.exp(0.25 * demand))
 
-    elif type_input == "pass":
+    elif type_input == "Rift Limited":
+        safe_lower = 1e-6
+        const_expr = (rarity * multiplier) * (island_chance / 100)
+        i1 = smp.integrate(
+            smp.sqrt(const_expr / (exist + 1)), (x_sym, safe_lower, exist + 1)
+        )
+        i2 = smp.integrate(
+            smp.sqrt(const_expr / exist), (x_sym, safe_lower, exist)
+        )
+        diff = (i1 - i2) * (1 + 0.15 * smp.exp(0.25 * demand))
+
+    elif type_input == "Pass":
         i1 = smp.integrate(
             (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand + 1)
         )
@@ -117,7 +128,7 @@ def calculate_value(
             diff = diff / (1 / (variant_multi / 3))
             diff = 0.5 * smp.sqrt(diff)
 
-    elif type_input == "shop":
+    elif type_input == "Shop":
         i1 = smp.integrate(
             (price * (1 - smp.exp(-c * x_sym))) / (c / x_sym), (x_sym, 0, demand + 2)
         )
@@ -135,14 +146,14 @@ def calculate_value(
 
 
 # ────────────────────────────  UI  ────────────────────────────
-pet_type = st.selectbox("Select pet type", ["permanent", "limited", "pass", "shop", "aura"])
+pet_type = st.selectbox("Select pet type", ["Permanent", "Limited", "Pass", "Shop", "Rift", "Rift Limited"])
 variant = st.selectbox("Select pet variant", ["normal", "shiny", "mythic", "shiny mythic"])
 variant_multi = variant_multipliers[variant]
 
 value = None  # will hold the final result
 
 # ─────────────────────────  PERMANENT / LIMITED  ─────────────────────────
-if pet_type in ["permanent", "limited"]:
+if pet_type in ["Permanent", "Limited"]:
     exist = st.number_input("Enter # of exist", min_value=1, step=1)
     rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
 
@@ -156,8 +167,29 @@ if pet_type in ["permanent", "limited"]:
             pet_type, variant, exist=exist, rarity=rarity, demand=demand
         )
 
-# ────────────────────────────────  AURA  ───────────────   ─────────────────
-elif pet_type == "aura":
+# ────────────────────────────────  Rift  ───────────────   ─────────────────
+elif pet_type == "Rfit":
+    exist = st.number_input("Enter # of exist", min_value=1, step=1)
+    rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
+    island_chance = st.number_input("Enter island chance", min_value=0.0001, format="%.4f")
+
+    # ▼ Live preview
+    st.caption(
+        f"**Preview — Exist:** {exist:,} • Rarity:** {rarity:,.4f} • Island chance:** {island_chance:,.4f}"
+    )
+
+    demand = st.slider("Enter demand (1‑10)", 1, 10)
+    if st.button("Calculate Value"):
+        value = calculate_value(
+            pet_type,
+            variant,
+            exist=exist,
+            rarity=rarity,
+            demand=demand,
+            island_chance=island_chance,
+        )
+
+elif pet_type == "Rift Limited ":
     exist = st.number_input("Enter # of exist", min_value=1, step=1)
     rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
     island_chance = st.number_input("Enter island chance", min_value=0.0001, format="%.4f")
@@ -179,7 +211,7 @@ elif pet_type == "aura":
         )
 
 # ───────────────────────────────  PASS  ────────────────────────────────
-elif pet_type == "pass":
+elif pet_type == "Pass":
     rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
     demand = st.slider("Enter demand (1‑10)", 1, 10)
     c = st.number_input("Enter c value (0.01 – 1)", min_value=0.01, format="%.3f")
@@ -198,7 +230,7 @@ elif pet_type == "pass":
         )
 
 # ───────────────────────────────  SHOP  ────────────────────────────────
-elif pet_type == "shop":
+elif pet_type == "Shop":
     price = st.number_input("Enter price", min_value=1, step=1)
     demand = st.slider("Enter demand (1‑10)", 1, 10)
     c = st.number_input("Enter c value (0.01 – 1)", min_value=0.01, format="%.3f")
