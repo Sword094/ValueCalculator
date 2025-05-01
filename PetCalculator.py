@@ -128,6 +128,20 @@ def calculate_value(
             diff = diff / (1 / (variant_multi / 3))
             diff = 0.5 * smp.sqrt(diff)
 
+    elif type_input == "Pass Limited":
+        i1 = smp.integrate(
+            (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand + 1)
+        )
+        i2 = smp.integrate(
+            (((1 - smp.exp(-x * x_sym)) / c) / rarity, (x_sym, 0, demand)
+        )
+        diff = (i1 - i2) ** 3
+        if variant_input == "normal":
+            diff = 0.75 * smp.sqrt(diff)
+        else:
+            diff = diff / (1 / (variant_multi / 3))
+            diff = 0.75 * smp.sqrt(diff)
+            
     elif type_input == "Shop":
         i1 = smp.integrate(
             (price * (1 - smp.exp(-c * x_sym))) / (c / x_sym), (x_sym, 0, demand + 2)
@@ -146,7 +160,7 @@ def calculate_value(
 
 
 # ────────────────────────────  UI  ────────────────────────────
-pet_type = st.selectbox("Select pet type", ["Permanent", "Limited", "Pass", "Shop", "Rift", "Rift Limited"])
+pet_type = st.selectbox("Select pet type", ["Permanent", "Limited", "Pass", "Pass Limited", "Shop", "Rift", "Rift Limited"])
 variant = st.selectbox("Select pet variant", ["normal", "shiny", "mythic", "shiny mythic"])
 variant_multi = variant_multipliers[variant]
 
@@ -214,7 +228,7 @@ elif pet_type == "Rift Limited":
 elif pet_type == "Pass":
     rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
     demand = st.slider("Enter demand (1‑10)", 1, 10)
-    c = st.number_input("Enter c value (0.01 – 1)", min_value=0.01, format="%.3f")
+    c = st.number_input("Enter c value (0.01+)", min_value=0.01, format="%.3f")
 
     # ▼ Live preview
     st.caption(f"**Preview — Rarity:** {rarity:,.4f} • c:** {c:,.3f}")
@@ -229,11 +243,27 @@ elif pet_type == "Pass":
             variant_multi=variant_multi,
         )
 
+elif pet_type == "Pass Limited":
+    rarity = st.number_input("Enter rarity", min_value == 0.0001, format="%.4f")
+    demand = st.slider("Enter demand (1-10)", 1, 10)
+    c = st.number_input("Enter c value (0.01+)", min_value=0.01, format="%.3f")
+
+    # Live Preview
+    if st.button("Calculate Value"):
+        value = calculate_value(
+            pet_type,
+            variant,
+            rarity=Decimal(rarity),
+            demand=demand,
+            c=Decimal(c),
+            variant_multi=variant_multi,
+        )
+
 # ───────────────────────────────  SHOP  ────────────────────────────────
 elif pet_type == "Shop":
     price = st.number_input("Enter price", min_value=1, step=1)
     demand = st.slider("Enter demand (1‑10)", 1, 10)
-    c = st.number_input("Enter c value (0.01 – 1)", min_value=0.01, format="%.3f")
+    c = st.number_input("Enter c value (0.01+)", min_value=0.01, format="%.3f")
 
     # ▼ Live preview
     st.caption(f"**Preview — Price:** {price:,} • c:** {c:,.3f}")
