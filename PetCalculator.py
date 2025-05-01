@@ -121,7 +121,7 @@ def calculate_value(
         i2 = smp.integrate(
             (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand)
         )
-        diff = (i1 - i2) ** 2.75
+        diff = (i1 - i2) ** 2.5
         if variant_input == "normal":
             diff = smp.sqrt(diff) / 2
         else:
@@ -135,7 +135,7 @@ def calculate_value(
         i2 = smp.integrate(
             (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand)
         )
-        diff = (i1 - i2) ** 2.75
+        diff = (i1 - i2) ** 2.5
         if variant_input == "normal":
             diff = smp.sqrt(diff) * 0.75
         else:
