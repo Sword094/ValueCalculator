@@ -141,11 +141,7 @@ def calculate_value(
         else:
             diff = diff / (1 / (variant_multi / 3))
             diff = smp.sqrt(diff) * 0.75
-        print("i1 =", i1.evalf())
-        print("i2 =", i2.evalf())
-        print("diff =", diff.evalf())
-
-            
+    
     elif type_input == "Shop":
         i1 = smp.integrate(
             (price * (1 - smp.exp(-c * x_sym))) / (c / x_sym), (x_sym, 0, demand + 2)
@@ -253,6 +249,8 @@ elif pet_type == "Pass Limited":
     c = st.number_input("Enter c value (0.01+)", min_value=0.01, format="%.3f")
 
     # Live Preview
+    st.caption(f"**Preview — Rarity:** {rarity:,.4f} • c:** {c:,.3f}")
+    
     if st.button("Calculate Value"):
         value = calculate_value(
             pet_type,
