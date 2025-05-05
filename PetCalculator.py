@@ -83,14 +83,14 @@ def calculate_value(
     multiplier = variant_multipliers.get(variant_input, 1)
 
     if type_input in ["Permanent", "Limited"]:
-        i1 = smp.integrate(
-            smp.sqrt((rarity * multiplier) / (exist + 2)), (x_sym, 0, exist + 2)
-        )
-        i2 = smp.integrate(
-            smp.sqrt((rarity * multiplier) / exist), (x_sym, 0, exist)
-        )
+        # i1 = smp.integrate(
+        #     smp.sqrt((rarity * multiplier) / (exist + 2)), (x_sym, 0, exist + 2)
+        # )
+        # i2 = smp.integrate(
+        #     smp.sqrt((rarity * multiplier) / exist), (x_sym, 0, exist)
+        # )
         multiplier_factor = 0.1 if type_input == "permanent" else 0.25
-        diff = (i1 - i2) * (1 + multiplier_factor * smp.exp(0.25 * demand))
+        diff = smp.sqrt(rarity / exist) * (1 + multiplier_factor * smp.exp(0.25 * demand))
 
     elif type_input == "Rift":
         safe_lower = 1e-6  # prevent divide by zero
