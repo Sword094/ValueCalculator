@@ -237,9 +237,9 @@ elif pet_type == "Pass":
         value = calculate_value(
             pet_type,
             variant,
-            rarity=Decimal(rarity),
+            rarity=float(rarity),
             demand=demand,
-            c=Decimal(c),
+            c=float(c),
             variant_multi=variant_multi,
         )
 
@@ -255,9 +255,9 @@ elif pet_type == "Pass Limited":
         value = calculate_value(
             pet_type,
             variant,
-            rarity=Decimal(rarity),
+            rarity=float(rarity),
             demand=demand,
-            c=Decimal(c),
+            c=float(c),
             variant_multi=variant_multi,
         )
 
