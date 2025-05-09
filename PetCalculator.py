@@ -90,7 +90,7 @@ def calculate_value(
         #     smp.sqrt((rarity * multiplier) / exist), (x_sym, 0, exist)
         # )
         multiplier_factor = 0.1 if type_input == "permanent" else 0.25
-        diff = smp.sqrt(rarity / exist) * (1 + multiplier_factor * smp.exp(0.25 * demand))
+        diff = smp.sqrt((rarity * multiplier) / exist) * (1 + multiplier_factor * smp.exp(0.25 * demand))
 
     elif type_input == "Rift":
         safe_lower = 1e-6  # prevent divide by zero
