@@ -62,6 +62,7 @@ variant_multipliers = {
     "shiny mythic": 400,
 }
 
+
 # ────────────────────────  Helper functions  ───────────────────────
 def find_closest_match(input_string, valid_strings, threshold=70):
     match, score = process.extractOne(input_string, valid_strings)
@@ -69,15 +70,15 @@ def find_closest_match(input_string, valid_strings, threshold=70):
 
 
 def calculate_value(
-    type_input,
-    variant_input,
-    exist=None,
-    rarity=None,
-    demand=None,
-    c=None,
-    price=None,
-    variant_multi=None,
-    island_chance=None,
+        type_input,
+        variant_input,
+        exist=None,
+        rarity=None,
+        demand=None,
+        c=None,
+        price=None,
+        variant_multi=None,
+        island_chance=None,
 ):
     x_sym = smp.Symbol("x")
     multiplier = variant_multipliers.get(variant_input, 1)
@@ -116,10 +117,10 @@ def calculate_value(
 
     elif type_input == "Pass":
         i1 = smp.integrate(
-            (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand + 1)
+            (((1 + smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand + 1)
         )
         i2 = smp.integrate(
-            (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand)
+            (((1 + smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand)
         )
         diff = (i1 - i2) ** 2.5
         if variant_input == "normal":
@@ -127,6 +128,7 @@ def calculate_value(
         else:
             diff = diff / (1 / (variant_multi / 3))
             diff = 0.5 * smp.sqrt(diff)
+
 
     elif type_input == "Pass Limited":
         i1 = smp.integrate(
@@ -141,7 +143,26 @@ def calculate_value(
         else:
             diff = diff / (1 / (variant_multi / 3))
             diff = smp.sqrt(diff) * 0.75
-    
+
+    elif type_input == "Defined Pass":
+        if variant_input == "normal":
+            i1 = smp.integrate(
+                smp.sqrt((rarity ** 2) / (exist + 1)), (x_sym, 0, exist + 1)
+            )
+            i2 = smp.integrate(
+                smp.sqrt((rarity ** 2) / exist), (x_sym, 0, exist)
+            )
+            diff = 2 * (i1 - i2) * (1 + 0.1 * smp.exp(0.25 * demand))
+        else:
+            i1 = smp.integrate(
+                smp.sqrt(((rarity * variant_multi) ** 2) / (exist + 1)), (x_sym, 0, exist + 1)
+            )
+            i2 = smp.integrate(
+                smp.sqrt(((rarity * variant_multi) ** 2) / exist), (x_sym, 0, exist)
+            )
+            diff = ((i1 - i2) ** 2) / (1 / (variant_multi / 3))
+            diff = 2 * smp.cbrt(diff)
+
     elif type_input == "Shop":
         i1 = smp.integrate(
             (price * (1 - smp.exp(-c * x_sym))) / (c / x_sym), (x_sym, 0, demand + 2)
@@ -160,7 +181,9 @@ def calculate_value(
 
 
 # ────────────────────────────  UI  ────────────────────────────
-pet_type = st.selectbox("Select pet type", ["Permanent", "Limited", "Pass", "Pass Limited", "Shop", "Rift", "Rift Limited"])
+pet_type = st.selectbox("Select pet type",
+                        ["Permanent", "Limited", "Pass", "Pass Limited", "Defined Pass", "Defined Pass Limited", "Shop",
+                         "Rift", "Rift Limited"])
 variant = st.selectbox("Select pet variant", ["normal", "shiny", "mythic", "shiny mythic"])
 variant_multi = variant_multipliers[variant]
 
@@ -231,7 +254,10 @@ elif pet_type == "Pass":
     c = st.number_input("Enter c value (0.01+)", min_value=0.01, format="%.3f")
 
     # ▼ Live preview
-    st.caption(f"**Preview — Rarity:** {rarity:,.4f} • c:** {c:,.3f}")
+    # st.caption(f"**Preview — Rarity:** {rarity:,.4f} • c:** {c:,.3f}")
+    st.markdown(
+        f"**Rarity:** {int(rarity):,}  |  **Demand:** {demand}/10 | **C:** {c}"
+    )
 
     if st.button("Calculate Value"):
         value = calculate_value(
@@ -249,16 +275,48 @@ elif pet_type == "Pass Limited":
     c = st.number_input("Enter c value (0.01+)", min_value=0.01, format="%.3f")
 
     # Live Preview
-    st.caption(f"**Preview — Rarity:** {rarity:,.4f} • c:** {c:,.3f}")
-    
+    # st.caption(f"**Preview — Rarity:** {rarity:,.4f} • c:** {c:,.3f}")
+    st.markdown(
+        f"**Rarity:** {int(rarity):,}  |  **Demand:** {demand}/10 | **C:** {c}"
+    )
+
     if st.button("Calculate Value"):
         value = calculate_value(
             pet_type,
             variant,
-            rarity=float(rarity),
+            rarity=Decimal(rarity),
             demand=demand,
-            c=float(c),
+            c=Decimal(c),
             variant_multi=variant_multi,
+        )
+
+elif pet_type == "Defined Pass":
+    rarity = st.number_input(
+        "Enter rarity",
+        min_value=1.0,
+        step=1.0,
+        format="%.0f"
+    )
+    exist = st.number_input(
+        "Enter exist",
+        min_value=1,
+        step=1
+    )
+    demand = st.slider("Enter demand (1-10)", 1, 10)
+
+    # Live preview
+    st.markdown(
+        f"**Rarity:** {int(rarity):,}  |  **Exist:** {exist:,}  |  **Demand:** {demand}/10"
+    )
+
+    if st.button("Calculate Value"):
+        value = calculate_value(
+            pet_type,
+            variant,
+            rarity=Decimal(rarity),
+            exist=exist,
+            demand=demand,
+            variant_multi=variant_multi
         )
 
 # ───────────────────────────────  SHOP  ────────────────────────────────
