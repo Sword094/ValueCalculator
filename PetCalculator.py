@@ -91,77 +91,97 @@ def calculate_value(
         #     smp.sqrt((rarity * multiplier) / exist), (x_sym, 0, exist)
         # )
         multiplier_factor = 0.1 if type_input == "permanent" else 0.25
-        diff = smp.sqrt((rarity * multiplier) / exist) * (1 + multiplier_factor * smp.exp(0.25 * demand))
+        diff = 2 * (smp.sqrt((rarity * multiplier) / exist) * (1 + multiplier_factor * smp.exp(0.25 * demand)))
 
     elif type_input == "Rift":
-        safe_lower = 1e-6  # prevent divide by zero
-        const_expr = (rarity * multiplier) * (island_chance / 100)
-        i1 = smp.integrate(
-            smp.sqrt(const_expr / (exist + 1)), (x_sym, safe_lower, exist + 1)
-        )
-        i2 = smp.integrate(
-            smp.sqrt(const_expr / exist), (x_sym, safe_lower, exist)
-        )
-        diff = (i1 - i2) * (1 + 0.1 * smp.exp(0.25 * demand))
-
-    elif type_input == "Rift Limited":
-        safe_lower = 1e-6
-        const_expr = (rarity * multiplier) * (island_chance / 100)
-        i1 = smp.integrate(
-            smp.sqrt(const_expr / (exist + 1)), (x_sym, safe_lower, exist + 1)
-        )
-        i2 = smp.integrate(
-            smp.sqrt(const_expr / exist), (x_sym, safe_lower, exist)
-        )
-        diff = (i1 - i2) * (1 + 0.15 * smp.exp(0.25 * demand))
-
-    elif type_input == "Pass":
-        i1 = smp.integrate(
-            (((1 + smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand + 1)
-        )
-        i2 = smp.integrate(
-            (((1 + smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand)
-        )
-        diff = (i1 - i2) ** 2.5
-        if variant_input == "normal":
-            diff = smp.sqrt(diff) / 2
-        else:
-            diff = diff / (1 / (variant_multi / 3))
-            diff = 0.5 * smp.sqrt(diff)
-
-
-    elif type_input == "Pass Limited":
-        i1 = smp.integrate(
-            (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand + 1)
-        )
-        i2 = smp.integrate(
-            (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand)
-        )
-        diff = (i1 - i2) ** 2.5
-        if variant_input == "normal":
-            diff = smp.sqrt(diff) * 0.75
-        else:
-            diff = diff / (1 / (variant_multi / 3))
-            diff = smp.sqrt(diff) * 0.75
-
-    elif type_input == "Defined Pass":
-        if variant_input == "normal":
+        multiplier_factor = 0.1 if availability == "Still Obtainable" else 0.25
+        if availability == "Still Obtainable":
+            safe_lower = 1e-6  # prevent divide by zero
+            const_expr = (rarity * multiplier) * (island_chance / 100)
             i1 = smp.integrate(
-                smp.sqrt((rarity ** 2) / (exist + 1)), (x_sym, 0, exist + 1)
+                smp.sqrt(const_expr / (exist + 1)), (x_sym, safe_lower, exist + 1)
             )
             i2 = smp.integrate(
-                smp.sqrt((rarity ** 2) / exist), (x_sym, 0, exist)
+                smp.sqrt(const_expr / exist), (x_sym, safe_lower, exist)
             )
-            diff = 2 * (i1 - i2) * (1 + 0.1 * smp.exp(0.25 * demand))
+            diff = 2 * ((i1 - i2) * (1 + multiplier_factor * smp.exp(0.25 * demand)))
         else:
+            safe_lower = 1e-6
+            const_expr = (rarity * multiplier) * (island_chance / 100)
             i1 = smp.integrate(
-                smp.sqrt(((rarity * variant_multi) ** 2) / (exist + 1)), (x_sym, 0, exist + 1)
+                smp.sqrt(const_expr / (exist + 1)), (x_sym, safe_lower, exist + 1)
             )
             i2 = smp.integrate(
-                smp.sqrt(((rarity * variant_multi) ** 2) / exist), (x_sym, 0, exist)
+                smp.sqrt(const_expr / exist), (x_sym, safe_lower, exist)
             )
-            diff = ((i1 - i2) ** 2) / (1 / (variant_multi / 3))
-            diff = 2 * smp.cbrt(diff)
+            diff = 2 * ((i1 - i2) * (1 + multiplier_factor * smp.exp(0.25 * demand)))
+
+    elif type_input == "Legendary Pass":
+        if availability == "Still Obtainable":
+            i1 = smp.integrate(
+                (((1 + smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand + 1)
+            )
+            i2 = smp.integrate(
+                (((1 + smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand)
+            )
+            diff = (i1 - i2) ** 2.5
+            if variant_input == "normal":
+                diff = 2 * (smp.sqrt(diff) / 2)
+            else:
+                diff = diff / (1 / (variant_multi / 3))
+                diff = 2 * (0.5 * smp.sqrt(diff))
+        else:
+            i1 = smp.integrate(
+                (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand + 1)
+            )
+            i2 = smp.integrate(
+                (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand)
+            )
+            diff = (i1 - i2) ** 2.5
+            if variant_input == "normal":
+                diff = 2 * (smp.sqrt(diff) * 0.75)
+            else:
+                diff = diff / (1 / (variant_multi / 3))
+                diff = 2 * (smp.sqrt(diff) * 0.75)
+
+    elif type_input == "Secret Pass":
+        multiplier_factor = 0.1 if availability == "Still Obtainable" else 0.25
+        if availability == "Still Obtainable":
+            if variant_input == "normal":
+                i1 = smp.integrate(
+                    smp.sqrt((rarity ** 2) / (exist + 1)), (x_sym, 0, exist + 1)
+                )
+                i2 = smp.integrate(
+                    smp.sqrt((rarity ** 2) / exist), (x_sym, 0, exist)
+                )
+                diff = 2 * (i1 - i2) * (1 + multiplier_factor * smp.exp(0.25 * demand))
+            else:
+                i1 = smp.integrate(
+                    smp.sqrt(((rarity * variant_multi) ** 2) / (exist + 1)), (x_sym, 0, exist + 1)
+                )
+                i2 = smp.integrate(
+                    smp.sqrt(((rarity * variant_multi) ** 2) / exist), (x_sym, 0, exist)
+                )
+                diff = ((i1 - i2) ** 2) / (1 / (variant_multi / 3))
+                diff = 2 * (smp.cbrt(diff) * (1 + multiplier_factor * smp.exp(0.25 * demand)))
+        else:
+            if variant_input == "normal":
+                i1 = smp.integrate(
+                    smp.sqrt((rarity ** 2) / (exist + 1)), (x_sym, 0, exist + 1)
+                )
+                i2 = smp.integrate(
+                    smp.sqrt((rarity ** 2) / exist), (x_sym, 0, exist)
+                )
+                diff = 2 * (i1 - i2) * (1 + multiplier_factor * smp.exp(0.25 * demand))
+            else:
+                i1 = smp.integrate(
+                    smp.sqrt(((rarity * variant_multi) ** 2) / (exist + 1)), (x_sym, 0, exist + 1)
+                )
+                i2 = smp.integrate(
+                    smp.sqrt(((rarity * variant_multi) ** 2) / exist), (x_sym, 0, exist)
+                )
+                diff = ((i1 - i2) ** 2) / (1 / (variant_multi / 3))
+                diff = 2 * (smp.cbrt(diff) * (1 + multiplier_factor * smp.exp(0.25 * demand)))
 
     elif type_input == "Shop":
         i1 = smp.integrate(
@@ -172,20 +192,26 @@ def calculate_value(
         )
         diff = (i1 - i2) ** 1.15
         if variant_input != "normal":
-            diff = diff / (1 / variant_multi)
-        diff = 0.5 * smp.sqrt(diff)
+            diff = 2 * (diff / (1 / variant_multi))
+        diff = 2 * (0.5 * smp.sqrt(diff))
     else:
         return None
 
     return diff.evalf()
 
 
+
+
+
+
+
+
 # ────────────────────────────  UI  ────────────────────────────
 pet_type = st.selectbox("Select pet type",
-                        ["Permanent", "Limited", "Pass", "Pass Limited", "Defined Pass", "Defined Pass Limited", "Shop",
-                         "Rift", "Rift Limited"])
+                        ["Permanent", "Limited", "Legendary Pass", "Secret Pass", "Rift", "Shop"])
 variant = st.selectbox("Select pet variant", ["normal", "shiny", "mythic", "shiny mythic"])
 variant_multi = variant_multipliers[variant]
+
 
 value = None  # will hold the final result
 
@@ -206,27 +232,7 @@ if pet_type in ["Permanent", "Limited"]:
 
 # ────────────────────────────────  Rift  ───────────────   ─────────────────
 elif pet_type == "Rift":
-    exist = st.number_input("Enter # of exist", min_value=1, step=1)
-    rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
-    island_chance = st.number_input("Enter island chance", min_value=0.0001, format="%.4f")
-
-    # ▼ Live preview
-    st.caption(
-        f"**Preview — Exist:** {exist:,} • Rarity:** {rarity:,.4f} • Island chance:** {island_chance:,.4f}"
-    )
-
-    demand = st.slider("Enter demand (1‑10)", 1, 10)
-    if st.button("Calculate Value"):
-        value = calculate_value(
-            pet_type,
-            variant,
-            exist=exist,
-            rarity=rarity,
-            demand=demand,
-            island_chance=island_chance,
-        )
-
-elif pet_type == "Rift Limited":
+    availability = st.selectbox("Select Availability", ["Still Obtainable", "Limited"])
     exist = st.number_input("Enter # of exist", min_value=1, step=1)
     rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
     island_chance = st.number_input("Enter island chance", min_value=0.0001, format="%.4f")
@@ -248,7 +254,8 @@ elif pet_type == "Rift Limited":
         )
 
 # ───────────────────────────────  PASS  ────────────────────────────────
-elif pet_type == "Pass":
+elif pet_type == "Legendary Pass":
+    availability = st.selectbox("Select Availability", ["Still Obtainable", "Limited"])
     rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
     demand = st.slider("Enter demand (1‑10)", 1, 10)
     c = st.number_input("Enter c value (0.01+)", min_value=0.01, format="%.3f")
@@ -269,28 +276,8 @@ elif pet_type == "Pass":
             variant_multi=variant_multi,
         )
 
-elif pet_type == "Pass Limited":
-    rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
-    demand = st.slider("Enter demand (1-10)", 1, 10)
-    c = st.number_input("Enter c value (0.01+)", min_value=0.01, format="%.3f")
-
-    # Live Preview
-    # st.caption(f"**Preview — Rarity:** {rarity:,.4f} • c:** {c:,.3f}")
-    st.markdown(
-        f"**Rarity:** {int(rarity):,}  |  **Demand:** {demand}/10 | **C:** {c}"
-    )
-
-    if st.button("Calculate Value"):
-        value = calculate_value(
-            pet_type,
-            variant,
-            rarity=Decimal(rarity),
-            demand=demand,
-            c=Decimal(c),
-            variant_multi=variant_multi,
-        )
-
-elif pet_type == "Defined Pass":
+elif pet_type == "Secret Pass":
+    availability = st.selectbox("Select Availability", ["Still Obtainable", "Limited"])
     rarity = st.number_input(
         "Enter rarity",
         min_value=1.0,
