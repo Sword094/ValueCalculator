@@ -126,10 +126,10 @@ def calculate_value(
             )
             diff = (i1 - i2) ** 2.5
             if variant_input == "normal":
-                diff = 2 * (smp.sqrt(diff) / 2)
+                diff = 2 * (smp.sqrt(diff) * 0.1)
             else:
                 diff = diff / (1 / (variant_multi / 3))
-                diff = 2 * (0.5 * smp.sqrt(diff))
+                diff = 2 * (0.1 * smp.sqrt(diff))
         else:
             i1 = smp.integrate(
                 (((1 - smp.exp(-c * x_sym)) / c) / rarity), (x_sym, 0, demand + 1)
@@ -139,10 +139,10 @@ def calculate_value(
             )
             diff = (i1 - i2) ** 2.5
             if variant_input == "normal":
-                diff = 2 * (smp.sqrt(diff) * 0.75)
+                diff = 2 * (smp.sqrt(diff) * 0.2)
             else:
                 diff = diff / (1 / (variant_multi / 3))
-                diff = 2 * (smp.sqrt(diff) * 0.75)
+                diff = 2 * (smp.sqrt(diff) * 0.2)
 
     elif type_input == "Secret Pass":
         multiplier_factor = 0.1 if availability == "Still Obtainable" else 0.25
