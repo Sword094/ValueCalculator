@@ -184,16 +184,27 @@ def calculate_value(
                 diff = 2 * (smp.cbrt(diff) * (1 + multiplier_factor * smp.exp(0.25 * demand)))
 
     elif type_input == "Shop":
-        i1 = smp.integrate(
-            (price * (1 - smp.exp(-c * x_sym))) / (c / x_sym), (x_sym, 0, demand + 2)
-        )
-        i2 = smp.integrate(
-            (price * (1 - smp.exp(-c * x_sym))) / (c / x_sym), (x_sym, 0, demand)
-        )
-        diff = (i1 - i2) ** 1.15
-        if variant_input != "normal":
-            diff = 2 * (diff / (1 / variant_multi))
-        diff = 2 * (0.5 * smp.sqrt(diff))
+        if variant_input == "normal":
+            i1 = smp.integrate(
+                (price * (1 - smp.exp(-c * x_sym))) / (c / x_sym), (x_sym, 0, demand + 1)
+            )
+            i2 = smp.integrate(
+                (price * (1 - smp.exp(-c * x_sym))) / (c / x_sym), (x_sym, 0, demand)
+            )
+            diff = (i1 - i2) ** 1.25
+            diff = 2 * (0.5 * smp.sqrt(diff))
+
+        elif variant_input != "normal":
+            i1 = smp.integrate(
+                (price * (1 - smp.exp(-c * x_sym))) / (c / x_sym), (x_sym, 0, demand + 1)
+            )
+            i2 = smp.integrate(
+                (price * (1 - smp.exp(-c * x_sym))) / (c / x_sym), (x_sym, 0, demand)
+            )
+            diff = (i1 - i2) ** 1.25
+            diff = 0.25 * (diff / (1 / variant_multi))
+            diff = 2 * smp.sqrt(diff)
+        
     else:
         return None
 
