@@ -234,7 +234,7 @@ if pet_type in ["Permanent", "Limited"]:
     # ▼ Live preview
     st.caption(f"**Preview — Exist:** {exist:,}  • Rarity:** {rarity:,.4f}")
 
-    demand = st.slider("Enter demand (1‑10)", 1, 10)
+    demand = st.slider("Enter demand (1‑20)", 1, 20)
 
     if st.button("Calculate Value"):
         value = calculate_value(
@@ -253,7 +253,7 @@ elif pet_type == "Rift":
         f"**Preview — Exist:** {exist:,} • Rarity:** {rarity:,.4f} • Island chance:** {island_chance:,.4f}"
     )
 
-    demand = st.slider("Enter demand (1‑10)", 1, 10)
+    demand = st.slider("Enter demand (1‑20)", 1, 20)
     if st.button("Calculate Value"):
         value = calculate_value(
             pet_type,
@@ -268,7 +268,7 @@ elif pet_type == "Rift":
 elif pet_type == "Legendary Pass":
     availability = st.selectbox("Select Availability", ["Still Obtainable", "Limited"])
     rarity = st.number_input("Enter rarity", min_value=0.0001, format="%.4f")
-    demand = st.slider("Enter demand (1‑10)", 1, 10)
+    demand = st.slider("Enter demand (1‑20)", 1, 20)
     c = st.number_input("Enter c value (0.01+)", min_value=0.01, format="%.3f")
 
     # ▼ Live preview
@@ -300,7 +300,7 @@ elif pet_type == "Secret Pass":
         min_value=1,
         step=1
     )
-    demand = st.slider("Enter demand (1-10)", 1, 10)
+    demand = st.slider("Enter demand (1-20)", 1, 20)
 
     # Live preview
     st.markdown(
@@ -320,7 +320,7 @@ elif pet_type == "Secret Pass":
 # ───────────────────────────────  SHOP  ────────────────────────────────
 elif pet_type == "Shop":
     price = st.number_input("Enter price", min_value=1, step=1)
-    demand = st.slider("Enter demand (1‑10)", 1, 10)
+    demand = st.slider("Enter demand (1‑20)", 1, 20)
     c = st.number_input("Enter c value (0.01+)", min_value=0.01, format="%.3f")
 
     # ▼ Live preview
